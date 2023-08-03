@@ -6,8 +6,7 @@ namespace BotPOE
     {
         static void Main(string[] args)
         {
-            var botClient = new TelegramBotClient("6054284848:AAEL6eVxR94H-HMZ9DqMTCddv7Fxa_u78hk");
-
+            var botClient = new TelegramBotClient("");
             using CancellationTokenSource cts = new();
             
             Buttons buttons = new Buttons();
