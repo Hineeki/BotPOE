@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using Newtonsoft.Json.Linq;
+using Telegram.Bot;
 
 namespace BotPOE
 {
@@ -6,9 +7,33 @@ namespace BotPOE
     {
         static void Main(string[] args)
         {
-            var botClient = new TelegramBotClient("");
-            using CancellationTokenSource cts = new();
-            
+            //var botClient = new TelegramBotClient("");
+            //using CancellationTokenSource cts = new();
+
+            GetRequest leagueRequest = new("https://poe.ninja/api/data/getindexstate?");
+            leagueRequest.Run();
+            string leagueResponse = leagueRequest.Response;
+            JObject jsonLeagues = JObject.Parse(leagueResponse);
+
+            string leagueName = GetLeagueName(jsonLeagues);
+            GetRequest currencyRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Currency");
+            currencyRequest.Run();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             Buttons buttons = new Buttons();
             var chaos = new Currency("Chaos orb", 1);
             var div = new Currency("Divine Orb", 185);
@@ -60,6 +85,18 @@ namespace BotPOE
             {
                 Console.WriteLine($"{item.Name}: {item.Value} chaos orbes.");
             }
+        }
+
+        static string GetLeagueName(JToken jsonLeague)
+        {
+            var economyLeagues = jsonLeague["economyLeagues"];
+
+            foreach (var item in economyLeagues)
+            {
+                var leagueName = item["name"];
+                return (string)leagueName;
+            }
+            return null;
         }
     }
 }
