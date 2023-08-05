@@ -18,22 +18,13 @@ namespace BotPOE
             string leagueName = GetLeagueName(jsonLeagues);
             GetRequest currencyRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Currency");
             currencyRequest.Run();
+            string currencyResponse = currencyRequest.Response;
+            JObject jsonCurrency = JObject.Parse(currencyResponse);
+            
+            Dictionary<string,double> myCurrency = GetCurrencyTab(jsonCurrency);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            
+            #region MainBody
             Buttons buttons = new Buttons();
             var chaos = new Currency("Chaos orb", 1);
             var div = new Currency("Divine Orb", 185);
@@ -65,31 +56,31 @@ namespace BotPOE
                             Console.Clear();
                             Console.WriteLine("Chaos to Div");
                             double chaosValue = Convert.ToDouble(Console.ReadLine());
-                            chaosValue /= div.Value;
+                            chaosValue /= div.ChaosEquivalent;
                             Console.WriteLine(chaosValue);
                             break;
                         case 2:
                             Console.Clear();
                             Console.WriteLine("Div to Chaos");
                             double divValue = Convert.ToDouble(Console.ReadLine());
-                            double c = divValue * div.Value;
+                            double c = divValue * div.ChaosEquivalent;
                             Console.WriteLine(c);
                             break;
                     }
                     break;
             }
+            #endregion
         }
         static void PrintCurrencyRate(List<Currency> list)
         {
             foreach (var item in list)
             {
-                Console.WriteLine($"{item.Name}: {item.Value} chaos orbes.");
+                Console.WriteLine($"{item.CurrencyTypeName}: {item.ChaosEquivalent} chaos orbes.");
             }
         }
-
-        static string GetLeagueName(JToken jsonLeague)
+        static string GetLeagueName(JObject json)
         {
-            var economyLeagues = jsonLeague["economyLeagues"];
+            var economyLeagues = json["economyLeagues"];
 
             foreach (var item in economyLeagues)
             {
@@ -97,6 +88,15 @@ namespace BotPOE
                 return (string)leagueName;
             }
             return null;
+        }
+        static Dictionary<string, double> GetCurrencyTab(JObject json)
+        {
+            Dictionary<string, double> keyValuePairs = new Dictionary<string, double>();
+            foreach (var item in json["lines"])
+            {
+                keyValuePairs.Add((string)item["currencyTypeName"], (double)item["chaosEquivalent"]);
+            }
+            return keyValuePairs;
         }
     }
 }

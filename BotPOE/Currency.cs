@@ -10,10 +10,10 @@ namespace BotPOE
     {
         public Currency(string name, double value)
         {
-            Name = name;
-            Value = value;
+            CurrencyTypeName = name;
+            ChaosEquivalent = value;
         }
-        public string Name { get; }
-        public double Value { get; }// in chaos
+        public string CurrencyTypeName { get; }
+        public double ChaosEquivalent { get; }
     }
 }

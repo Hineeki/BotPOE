@@ -28,7 +28,10 @@ namespace BotPOE
             {
                 HttpWebResponse response = (HttpWebResponse)_request.GetResponse();
                 var stream = response.GetResponseStream();
-                if (stream != null) Response = new StreamReader(stream).ReadToEnd();
+                if (stream != null)
+                {
+                    Response = new StreamReader(stream).ReadToEnd();
+                }
             }
             catch (Exception)
             {
