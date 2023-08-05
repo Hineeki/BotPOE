@@ -20,16 +20,13 @@ namespace BotPOE
             currencyRequest.Run();
             string currencyResponse = currencyRequest.Response;
             JObject jsonCurrency = JObject.Parse(currencyResponse);
-            
             Dictionary<string,double> myCurrency = GetCurrencyTab(jsonCurrency);
 
-            
-            #region MainBody
             Buttons buttons = new Buttons();
             var chaos = new Currency("Chaos orb", 1);
-            var div = new Currency("Divine Orb", 185);
-            var mirShard = new Currency("Mirror Shard", 5300);
-            var mirror = new Currency("Mirror of Kalandra", 105300);//надо превратить в 105.3k
+            var div = new Currency("Divine Orb", myCurrency["Divine Orb"]);
+            var mirShard = new Currency("Mirror Shard", myCurrency["Mirror Shard"]);
+            var mirror = new Currency("Mirror of Kalandra", myCurrency["Mirror of Kalandra"]);//надо превратить в 105.3k
             List<Currency> listCurrency = new List<Currency>()
             {
                 div, mirShard, mirror
@@ -69,8 +66,8 @@ namespace BotPOE
                     }
                     break;
             }
-            #endregion
         }
+
         static void PrintCurrencyRate(List<Currency> list)
         {
             foreach (var item in list)
