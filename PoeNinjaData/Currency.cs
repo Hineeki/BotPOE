@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BotPOE
+﻿
+namespace RequestPoeNinjaData
 {
-    internal class Currency
+    public class Currency
     {
         public Currency(string name, double value)
         {

@@ -1,36 +1,28 @@
 ﻿using Newtonsoft.Json.Linq;
 using Telegram.Bot;
+using System.Timers;
+using Telegram.Bot.Exceptions;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types;
+using RequestPoeNinjaData;
+using System;
 
 namespace BotPOE
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static System.Timers.Timer myTimer;
+        private static TelegramBotClient botClient = new TelegramBotClient("6054284848:AAEL6eVxR94H-HMZ9DqMTCddv7Fxa_u78hk");
+        static async Task Main(string[] args)
         {
-            //var botClient = new TelegramBotClient("");
-            //using CancellationTokenSource cts = new();
+            myTimer = new System.Timers.Timer(600000);
+            myTimer.Elapsed += OnTimerElapsed;
+            myTimer.Start();
+            GetPoeData.myCurrency = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());
+            var div = GetPoeData.myCurrency.Find(x => x.CurrencyTypeName == "Divine Orb");
 
-            GetRequest leagueRequest = new("https://poe.ninja/api/data/getindexstate?");
-            leagueRequest.Run();
-            string leagueResponse = leagueRequest.Response;
-            JObject jsonLeagues = JObject.Parse(leagueResponse);
-
-            string leagueName = GetLeagueName(jsonLeagues);
-            GetRequest currencyRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Currency");
-            currencyRequest.Run();
-            string currencyResponse = currencyRequest.Response;
-            JObject jsonCurrency = JObject.Parse(currencyResponse);
-            Dictionary<string,double> myCurrency = GetCurrencyTab(jsonCurrency);
-
-            Buttons buttons = new Buttons();
-            var chaos = new Currency("Chaos orb", 1);
-            var div = new Currency("Divine Orb", myCurrency["Divine Orb"]);
-            var mirShard = new Currency("Mirror Shard", myCurrency["Mirror Shard"]);
-            var mirror = new Currency("Mirror of Kalandra", myCurrency["Mirror of Kalandra"]);//надо превратить в 105.3k
-            List<Currency> listCurrency = new List<Currency>()
-            {
-                div, mirShard, mirror
-            };
+            #region Console type
             Console.WriteLine("Выберите пункт меню: 1. Курс валют. 2. Конвертер валют.");
             Console.Write("Пункт №");
             int button = Convert.ToInt32(Console.ReadLine());
@@ -40,7 +32,7 @@ namespace BotPOE
                 case 1:
                     Console.Clear();
                     Console.WriteLine("Курс валют");
-                    PrintCurrencyRate(listCurrency);
+                    PrintCurrencyRate(GetPoeData.myCurrency);
                     break;
                 case 2:
                     Console.WriteLine("Конвертер валют");
@@ -66,34 +58,80 @@ namespace BotPOE
                     }
                     break;
             }
+            #endregion
+
+            using CancellationTokenSource cts = new();
+
+            // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
+            ReceiverOptions receiverOptions = new()
+            {
+                AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
+            };
+
+            botClient.StartReceiving(//именовынные параметры
+                updateHandler: HandleUpdateAsync,
+                pollingErrorHandler: HandlePollingErrorAsync,
+                receiverOptions: receiverOptions,
+                cancellationToken: cts.Token
+            );
+
+            var myBot = await botClient.GetMeAsync();
+
+            Console.WriteLine($"Start listening for @{myBot.Username}");
+            Console.ReadLine();
+
+            // Send cancellation request to stop bot
+            cts.Cancel();
+        }
+        static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+            // Only process Message updates: https://core.telegram.org/bots/api#message
+            if (update.Message is not { } message)
+                return;
+            // Only process text messages
+            if (message.Text is not { } messageText)
+                return;
+
+            var chatId = message.Chat.Id;
+
+            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+
+            // Echo received message text
+            Message sentMessage = await botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: "You said:\n" + messageText,
+                cancellationToken: cancellationToken);
         }
 
-        static void PrintCurrencyRate(List<Currency> list)
+        static Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        {
+            var ErrorMessage = exception switch
+            {
+                ApiRequestException apiRequestException
+                    => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                _ => exception.ToString()
+            };
+
+            Console.WriteLine(ErrorMessage);
+            return Task.CompletedTask;
+        }
+        private static void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine("Отправка запросов к веб-серверу. Период 10 минут.");
+            GetPoeData.myCurrency = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());
+        }
+
+        public static void PrintCurrencyRate(List<Currency> list)
         {
             foreach (var item in list)
             {
-                Console.WriteLine($"{item.CurrencyTypeName}: {item.ChaosEquivalent} chaos orbes.");
+                if(item.ChaosEquivalent > 20)
+                {
+                    Console.WriteLine($"{item.CurrencyTypeName}: {item.ChaosEquivalent} chaos orbes.");
+                }
             }
         }
-        static string GetLeagueName(JObject json)
-        {
-            var economyLeagues = json["economyLeagues"];
 
-            foreach (var item in economyLeagues)
-            {
-                var leagueName = item["name"];
-                return (string)leagueName;
-            }
-            return null;
-        }
-        static Dictionary<string, double> GetCurrencyTab(JObject json)
-        {
-            Dictionary<string, double> keyValuePairs = new Dictionary<string, double>();
-            foreach (var item in json["lines"])
-            {
-                keyValuePairs.Add((string)item["currencyTypeName"], (double)item["chaosEquivalent"]);
-            }
-            return keyValuePairs;
-        }
+        //var chatId = 354772242;
     }
 }
