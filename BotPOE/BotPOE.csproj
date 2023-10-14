@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BotLogic\BotLogic.csproj" />
     <ProjectReference Include="..\PoeNinjaData\RequestPoeNinjaData.csproj" />
   </ItemGroup>
 

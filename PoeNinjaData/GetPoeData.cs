@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Text;
 
 namespace RequestPoeNinjaData
 {
@@ -6,6 +8,8 @@ namespace RequestPoeNinjaData
     {
         private static string? _leagueName;
         public static List<Currency> myCurrency = new List<Currency>();
+        public static Currency div = new Currency();
+        public static StringBuilder StringCurrency = new StringBuilder();
 
         public static string GetLeagueData()
         {
@@ -50,7 +54,7 @@ namespace RequestPoeNinjaData
             return myCurrency;
         }
 
-        public static List<Currency> GetCurrencyList(JObject json)
+        private static List<Currency> GetCurrencyList(JObject json)
         {
             List<Currency> currencies = new List<Currency>();
             foreach (var item in json["lines"])
@@ -58,6 +62,19 @@ namespace RequestPoeNinjaData
                 currencies.Add(new Currency((string)item["currencyTypeName"], (double)item["chaosEquivalent"]));
             }
             return currencies;
+        }//как будто ненужная херня
+
+        public static StringBuilder GetStringBuilder(List<Currency> list)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in list)
+            {
+                if (item.ChaosEquivalent > 100)
+                {
+                    sb.AppendLine($"{item.CurrencyTypeName}: {item.ChaosEquivalent} chaos orbes.");
+                }
+            }
+            return sb;
         }
     }
 }

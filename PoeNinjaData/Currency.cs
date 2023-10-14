@@ -8,6 +8,7 @@ namespace RequestPoeNinjaData
             CurrencyTypeName = name;
             ChaosEquivalent = value;
         }
+        public Currency() { }
         public string CurrencyTypeName { get; }
         public double ChaosEquivalent { get; }
     }
