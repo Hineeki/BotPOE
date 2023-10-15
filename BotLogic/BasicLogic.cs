@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using RequestPoeNinjaData;
+using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -15,23 +16,27 @@ namespace BotLogic
                                     new KeyboardButton("Chaos to Div"), new KeyboardButton("Div to Chaos") };
         static ReplyKeyboardMarkup keyboard1 = new ReplyKeyboardMarkup(buttons1) { ResizeKeyboard = true };
 
+        static List<InlineKeyboardButton> buttons2 = new List<InlineKeyboardButton>() {new InlineKeyboardButton("Chaos to Div"),
+            new InlineKeyboardButton("Div to Chaos") };
+        static InlineKeyboardMarkup mesKeyboard2 = new InlineKeyboardMarkup(buttons2);
+        static ForceReplyMarkup ForceReplyMarkup = new ForceReplyMarkup();
+
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            // Only process Message updates: https://core.telegram.org/bots/api#message
             if (update.Message is not { } message)//is not { } message - это значит, что если update пустой, то return,
                 return;                           //а если не пустой то создаётся переменная message,ниже по томуже принципу
 
-            // Only process text messages
             if (message.Text is not { } messageText)
                 return;
+            Message? replyMessage = message.ReplyToMessage;
             var chatId = message.Chat.Id;
 
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
             try
             {
-                switch (messageText)
+                switch (messageText) // надо на if переходить скорее всего
                 {
-                    case "Курс валют":
+                    case ("Курс валют"):
                         Message message1 = await botClient.SendTextMessageAsync(
                             chatId: update.Message.Chat.Id,
                             text: GetPoeData.StringCurrency.ToString(),// ситуация РВГ
@@ -40,34 +45,39 @@ namespace BotLogic
                     case ("Chaos to Div"):
                         Message convertMessage1 = await botClient.SendTextMessageAsync(
                             chatId: chatId,
-                            text: "Введите сумму для конвертации:",
+                            text: "Chaos to Div:",
+                            replyMarkup: ForceReplyMarkup,
                             cancellationToken: cancellationToken);
                         break;
                     case ("Div to Chaos"):
                         Message convertMessage2 = await botClient.SendTextMessageAsync(
                             chatId: chatId,
-                            text: "Введите сумму для конвертации:",
+                            text: "Div to Chaos:",
+                            replyMarkup: ForceReplyMarkup,
                             cancellationToken: cancellationToken);
                         break;
                     default:
-                        Message defaultMessage = await botClient.SendTextMessageAsync(
+                        if (replyMessage == null)
+                        {
+                            await botClient.SendTextMessageAsync(
                             chatId: chatId,
-                            text: "You said:\n" + messageText,
+                            text: "Пустое сообщение",
                             replyMarkup: keyboard1,
                             cancellationToken: cancellationToken);
+                        }
+                        else
+                        {
+                            switch (replyMessage.Text)
+                            {
+                                case ("Chaos to Div:"):
+                                    await ChaosToDiv(botClient, message);
+                                    break;
+                                case ("Div to Chaos:"):
+                                    await DivToChaos(botClient, message);
+                                    break;
+                            }
+                        }
                         break;
-                }
-
-                //Доделать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if (double.TryParse(messageText, out double amount))
-                {
-                    await ChaosToDiv(botClient, message);
-                    await DivToChaos(botClient, message);
-
-                    Message message1 = await botClient.SendTextMessageAsync(
-                            chatId: chatId,
-                            text: "я над этим работаю. convValue =" + amount,
-                            cancellationToken: cancellationToken);
                 }
             }
             catch (Exception ex)
@@ -91,15 +101,30 @@ namespace BotLogic
 
         private static async Task ChaosToDiv(ITelegramBotClient botClient, Message message)
         {
-            var convValue = Convert.ToInt32(message.Text);
-            var value = convValue / GetPoeData.div.ChaosEquivalent;
-            await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value));
+            if(double.TryParse(message.Text, out var convValue))
+            {
+                var value = convValue / GetPoeData.div.ChaosEquivalent;
+                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
+            }
+            else
+            {
+                await botClient.SendTextMessageAsync(message.Chat.Id, 
+                    "Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)", replyMarkup: keyboard1);
+            }
         }
+
         private static async Task DivToChaos(ITelegramBotClient botClient, Message message)
         {
-            var convValue = Convert.ToInt32(message.Text);
-            var value = convValue * GetPoeData.div.ChaosEquivalent;
-            await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value));
+            if (double.TryParse(message.Text, out var convValue))
+            {
+                var value = convValue * GetPoeData.div.ChaosEquivalent;
+                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
+            }
+            else
+            {
+                await botClient.SendTextMessageAsync(message.Chat.Id, 
+                    "Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)", replyMarkup: keyboard1);
+            }
         }
 
     }

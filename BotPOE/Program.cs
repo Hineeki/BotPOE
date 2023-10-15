@@ -10,7 +10,7 @@ namespace BotPOE
 {
     internal class Program
     {
-        private static System.Timers.Timer myTimer;
+        private static System.Timers.Timer? myTimer;
         static async Task Main(string[] args)
         {
             myTimer = new System.Timers.Timer(600000);

@@ -11,6 +11,7 @@ namespace RequestPoeNinjaData
         {
             _url = url;
         }
+
         public void Run()
         {
             _request = (HttpWebRequest)WebRequest.Create(_url);
