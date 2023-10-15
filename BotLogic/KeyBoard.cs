@@ -18,8 +18,7 @@ namespace BotLogic
             _botClient = botClient;
             _chat = chat;
         }
-        static List<KeyboardButton> buttons1 = new List<KeyboardButton>() { new KeyboardButton("Курс валют"), new KeyboardButton("Конвертер валют")};
-        static ReplyKeyboardMarkup keyboard1 = new ReplyKeyboardMarkup(buttons1) { };
-
+        //static List<KeyboardButton> buttons1 = new List<KeyboardButton>()
+        //{ new KeyboardButton("Курс валют"), new KeyboardButton("Конвертер валют") };
     }
 }

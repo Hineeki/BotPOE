@@ -62,7 +62,7 @@ namespace RequestPoeNinjaData
                 currencies.Add(new Currency((string)item["currencyTypeName"], (double)item["chaosEquivalent"]));
             }
             return currencies;
-        }//как будто ненужная херня
+        }//как будто ненужная херня???
 
         public static StringBuilder GetStringBuilder(List<Currency> list)
         {
