@@ -12,13 +12,12 @@ namespace BotLogic
     public class BasicLogic
     {
         public static ITelegramBotClient bot = new TelegramBotClient("6054284848:AAEL6eVxR94H-HMZ9DqMTCddv7Fxa_u78hk");
+
         static List<KeyboardButton> buttons1 = new List<KeyboardButton>() { new KeyboardButton("Курс валют"),
-                                    new KeyboardButton("Chaos to Div"), new KeyboardButton("Div to Chaos") };
+                                               new KeyboardButton("Chaos to Div"), new KeyboardButton("Div to Chaos") };
+
         static ReplyKeyboardMarkup keyboard1 = new ReplyKeyboardMarkup(buttons1) { ResizeKeyboard = true };
 
-        static List<InlineKeyboardButton> buttons2 = new List<InlineKeyboardButton>() {new InlineKeyboardButton("Chaos to Div"),
-            new InlineKeyboardButton("Div to Chaos") };
-        static InlineKeyboardMarkup mesKeyboard2 = new InlineKeyboardMarkup(buttons2);
         static ForceReplyMarkup ForceReplyMarkup = new ForceReplyMarkup();
 
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
