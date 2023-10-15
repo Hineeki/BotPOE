@@ -100,7 +100,8 @@ namespace BotLogic
 
         private static async Task ChaosToDiv(ITelegramBotClient botClient, Message message)
         {
-            if(double.TryParse(message.Text, out var convValue))
+            var newMessage = message.Text.Replace('.', ',');
+            if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue / GetPoeData.div.ChaosEquivalent;
                 await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
@@ -114,7 +115,8 @@ namespace BotLogic
 
         private static async Task DivToChaos(ITelegramBotClient botClient, Message message)
         {
-            if (double.TryParse(message.Text, out var convValue))
+            var newMessage = message.Text.Replace('.', ',');
+            if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue * GetPoeData.div.ChaosEquivalent;
                 await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
