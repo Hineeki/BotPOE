@@ -104,12 +104,14 @@ namespace BotLogic
             if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue / GetPoeData.div.ChaosEquivalent;
-                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value) + " div", replyMarkup: keyboard1);
             }
             else
             {
-                await botClient.SendTextMessageAsync(message.Chat.Id, 
-                    "Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)", replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Ошибка валидации. Введены некорректные значения.\n" +
+                    " Просьба указывать запятую вместо точки(или наоборот) и не вводить букв.", replyMarkup: keyboard1);
+                //"Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)"
+
             }
         }
 
@@ -119,14 +121,13 @@ namespace BotLogic
             if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue * GetPoeData.div.ChaosEquivalent;
-                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value), replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value) + " chaos", replyMarkup: keyboard1);
             }
             else
             {
-                await botClient.SendTextMessageAsync(message.Chat.Id, 
-                    "Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)", replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Ошибка валидации. Введены некорректные значения.\n" +
+                    " Просьба указывать запятую вместо точки(или наоборот) и не вводить букв.", replyMarkup: keyboard1);
             }
         }
-
     }
 }
