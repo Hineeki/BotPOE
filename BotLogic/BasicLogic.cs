@@ -104,7 +104,7 @@ namespace BotLogic
             if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue / GetPoeData.div.ChaosEquivalent;
-                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value) + " div", replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, value.ToString("#.##") + " div", replyMarkup: keyboard1);
             }
             else
             {
@@ -121,7 +121,7 @@ namespace BotLogic
             if (double.TryParse(newMessage, out var convValue))
             {
                 var value = convValue * GetPoeData.div.ChaosEquivalent;
-                await botClient.SendTextMessageAsync(message.Chat.Id, Convert.ToString(value) + " chaos", replyMarkup: keyboard1);
+                await botClient.SendTextMessageAsync(message.Chat.Id, value.ToString("#.##") + " chaos orbes", replyMarkup: keyboard1);
             }
             else
             {
