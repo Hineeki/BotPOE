@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using RequestPoeNinjaData;
 using System.Globalization;
+using System.Text;
+using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -33,13 +35,24 @@ namespace BotLogic
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
             try
             {
-                switch (messageText) // надо на if переходить скорее всего
+                switch (messageText)
                 {
-                    case ("Курс валют"):
-                        Message message1 = await botClient.SendTextMessageAsync(
-                            chatId: update.Message.Chat.Id,
-                            text: GetPoeData.StringCurrency.ToString(),// ситуация РВГ
+                    case ("/description"):
+                        await botClient.SendTextMessageAsync(chatId: update.Message.Chat.Id,
+                            text: "Пока что этот бот может вывести \"Курс валют\" и конвертировать хаосы в диваны или диваны в хаосы.",
                             cancellationToken: cancellationToken);
+                        break;
+                    case ("/basecurrency"):
+                        await PrintBaseCurrency(botClient,message);
+                        break;
+                    case ("/fragments"):
+                        await PrintFragments(botClient, message);
+                        break;
+                    case ("/divcards"):
+                        await PrintDivCards(botClient, message);
+                        break;
+                    case ("Курс валют"):
+                        await PrintBaseCurrency(botClient, message);
                         break;
                     case ("Chaos to Div"):
                         Message convertMessage1 = await botClient.SendTextMessageAsync(
@@ -128,6 +141,25 @@ namespace BotLogic
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Ошибка валидации. Введены некорректные значения.\n" +
                     " Просьба указывать запятую вместо точки(или наоборот) и не вводить букв.", replyMarkup: keyboard1);
             }
+        }
+
+        private static async Task PrintBaseCurrency(ITelegramBotClient botClient, Message message)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb = GetPoeData.GetStringBuilder(GetPoeData.currencies);
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, text: sb.ToString());
+        }
+        private static async Task PrintFragments(ITelegramBotClient botClient, Message message)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb = GetPoeData.GetStringBuilder(GetPoeData.fragments);
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, text: sb.ToString());
+        }
+        private static async Task PrintDivCards(ITelegramBotClient botClient, Message message)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb = GetPoeData.GetStringBuilder(GetPoeData.divinationCards);
+            await botClient.SendTextMessageAsync(chatId: message.Chat.Id, text: sb.ToString());
         }
     }
 }

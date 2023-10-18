@@ -6,10 +6,11 @@ namespace RequestPoeNinjaData
 {
     public class GetPoeData
     {
-        private static string? _leagueName;
-        public static List<Currency> myCurrency = new List<Currency>();
-        public static Currency div = new Currency();
-        public static StringBuilder StringCurrency = new StringBuilder();
+        public static string? leagueName = "";
+        public static List<Currency> currencies = new List<Currency>();
+        public static List<Fragment> fragments = new List<Fragment>();
+        public static List<DivinationCard> divinationCards = new List<DivinationCard>();
+        public static Currency div = new Currency(null,0.00);
 
         public static string GetLeagueData()
         {
@@ -17,13 +18,13 @@ namespace RequestPoeNinjaData
             leagueRequest.Run();
             var leagueResponse = leagueRequest.Response;
             JObject jsonLeagues = JObject.Parse(leagueResponse);
-            string oldLeagueName = _leagueName;
-            _leagueName = GetLeagueName(jsonLeagues);
-            if (string.IsNullOrEmpty(_leagueName))
+            string oldLeagueName = leagueName;
+            leagueName = GetLeagueName(jsonLeagues);
+            if (string.IsNullOrEmpty(leagueName))
             {
                 Console.WriteLine("Данные с WEB по лиге не получены.");
             }
-            return _leagueName ??= oldLeagueName; //сомнительно!!!
+            return leagueName ??= oldLeagueName; //сомнительно!!!
         }
 
         private static string GetLeagueName(JObject json)
@@ -44,34 +45,60 @@ namespace RequestPoeNinjaData
         {
             GetRequest currencyRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Currency");
             currencyRequest.Run();
-            var currencyResponse = currencyRequest.Response;
-            JObject jsonCurrency = JObject.Parse(currencyResponse);
-            myCurrency = GetCurrencyList(jsonCurrency);
-            if (myCurrency[0].CurrencyTypeName != "Mirror of Kalandra")
+            JObject jsonCurrency = JObject.Parse(currencyRequest.Response);
+            List<Currency> newList = new List<Currency>();
+            foreach (var item in jsonCurrency["lines"])
+            {
+                newList.Add(new Currency((string)item["currencyTypeName"], (double)item["chaosEquivalent"]));
+            }
+            if (newList[0].Name != "Mirror of Kalandra")
             {
                 Console.WriteLine("Данные с WEB по валюте не получены.");
             }
-            return myCurrency;
+            return newList;
+        }
+        public static List<Fragment> GetFragmentsData(string leagueName)
+        {
+            GetRequest fragmentsRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Fragment");
+            fragmentsRequest.Run();
+            JObject jsonFragments = JObject.Parse(fragmentsRequest.Response);
+            List<Fragment> newList = new List<Fragment>();
+            foreach (var item in jsonFragments["lines"])
+            {
+                newList.Add(new Fragment((string)item["currencyTypeName"], (double)item["chaosEquivalent"]));
+            }
+            if (newList[0].Name != "Decaying Reliquary Key")
+            {
+                Console.WriteLine("Данные с WEB по валюте не получены.");
+            }
+            return newList;
+        }
+        public static List<DivinationCard> GetDivCardsData(string leagueName)
+        {
+            GetRequest divCardsRequest = new GetRequest(
+                $"https://poe.ninja/api/data/itemoverview?league={leagueName}&type=DivinationCard");
+            divCardsRequest.Run();
+            JObject jsonDivCards = JObject.Parse(divCardsRequest.Response);
+            List<DivinationCard> newList = new List<DivinationCard>();
+            foreach (var item in jsonDivCards["lines"])
+            {
+                newList.Add(new DivinationCard((string)item["name"], (double)item["chaosValue"]));
+            }
+            if (newList[0].Name != "House of Mirrors")
+            {
+                Console.WriteLine("Данные с WEB по валюте не получены.");
+            }
+            return newList;
         }
 
-        private static List<Currency> GetCurrencyList(JObject json)
-        {
-            List<Currency> currencies = new List<Currency>();
-            foreach (var item in json["lines"])
-            {
-                currencies.Add(new Currency((string)item["currencyTypeName"], (double)item["chaosEquivalent"]));
-            }
-            return currencies;
-        }//как будто ненужная херня???
-
-        public static StringBuilder GetStringBuilder(List<Currency> list)
+        public static StringBuilder GetStringBuilder(IEnumerable<ITradable> list)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var item in list)
             {
                 if (item.ChaosEquivalent > 100)
                 {
-                    sb.AppendLine($"{item.CurrencyTypeName}: {item.ChaosEquivalent} chaos orbes.");
+                    sb.AppendLine($"{item.Name}: {item.ChaosEquivalent} chaos orbes.");
                 }
             }
             return sb;

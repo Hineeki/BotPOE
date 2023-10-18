@@ -1,15 +1,14 @@
 ﻿
 namespace RequestPoeNinjaData
 {
-    public class Currency
+    public class Currency : ITradable
     {
-        public Currency(string name, double value)
+        public Currency(string name, double cost)
         {
-            CurrencyTypeName = name;
-            ChaosEquivalent = value;
+            Name = name;
+            ChaosEquivalent = cost;
         }
-        public Currency() { }
-        public string CurrencyTypeName { get; }
+        public string Name { get; }
         public double ChaosEquivalent { get; }
     }
 }

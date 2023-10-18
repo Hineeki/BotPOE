@@ -5,6 +5,8 @@ using RequestPoeNinjaData;
 using BotLogic;
 using Telegram.Bot.Types.ReplyMarkups;
 using System.Text;
+using System.Net;
+using static System.Net.WebRequestMethods;
 
 namespace BotPOE
 {
@@ -16,10 +18,13 @@ namespace BotPOE
             myTimer = new System.Timers.Timer(600000);
             myTimer.Elapsed += OnTimerElapsed;
             myTimer.Start();
-            GetPoeData.myCurrency = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());
-            GetPoeData.div = GetPoeData.myCurrency.Find(x => x.CurrencyTypeName == "Divine Orb");
-            GetPoeData.StringCurrency = GetPoeData.GetStringBuilder(GetPoeData.myCurrency);
-            
+
+            GetPoeData.currencies = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());//может в мейне создавать статические листы с данными
+            GetPoeData.div = GetPoeData.currencies.Find(x => x.Name == "Divine Orb");       //а не в библиотеках???
+            GetPoeData.fragments = GetPoeData.GetFragmentsData(GetPoeData.leagueName);
+            GetPoeData.divinationCards = GetPoeData.GetDivCardsData(GetPoeData.leagueName);
+
+
             Console.WriteLine("Запущен бот " + BasicLogic.bot.GetMeAsync().Result.FirstName);
 
             var cts = new CancellationTokenSource();
@@ -41,7 +46,9 @@ namespace BotPOE
         private static void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             Console.WriteLine("Отправка запросов к веб-серверу. Период 10 минут.");
-            GetPoeData.myCurrency = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());
+            GetPoeData.currencies = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());
+            GetPoeData.fragments = GetPoeData.GetFragmentsData(GetPoeData.leagueName);
+            GetPoeData.divinationCards = GetPoeData.GetDivCardsData(GetPoeData.leagueName);
         }
     }
 }
