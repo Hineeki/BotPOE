@@ -32,6 +32,7 @@ namespace BotLogic
             Message? replyMessage = message.ReplyToMessage;
             var chatId = message.Chat.Id;
 
+
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
             try
             {
@@ -86,6 +87,13 @@ namespace BotLogic
                                     break;
                                 case ("Div to Chaos:"):
                                     await DivToChaos(botClient, message);
+                                    break;
+                                default:
+                                    await botClient.SendTextMessageAsync(
+                                    chatId: chatId,
+                                    text: "Пустое сообщение",
+                                    replyMarkup: keyboard1,
+                                    cancellationToken: cancellationToken);
                                     break;
                             }
                         }
