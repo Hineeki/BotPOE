@@ -56,7 +56,7 @@ namespace RequestPoeNinjaData
                 Console.WriteLine("Данные с WEB по валюте не получены.");
             }
             return newList;
-        }// нужно подумать как лучше хранить валюту, чтобы и в сообщениях отправлять и вытягивать атомарно
+        }// нужно подумать как лучше хранить валюту, чтобы и в сообщениях отправлять 
         public static List<Fragment> GetFragmentsData(string leagueName)
         {
             GetRequest fragmentsRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Fragment");
@@ -72,7 +72,7 @@ namespace RequestPoeNinjaData
                 Console.WriteLine("Данные с WEB по валюте не получены.");
             }
             return newList;
-        }
+        }//и вытягивать поштучно
         public static List<DivinationCard> GetDivCardsData(string leagueName)
         {
             GetRequest divCardsRequest = new GetRequest(
