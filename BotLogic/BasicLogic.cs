@@ -29,7 +29,7 @@ namespace BotLogic
 
             if (message.Text is not { } messageText)
                 return;
-            Message? replyMessage = message.ReplyToMessage;
+            var replyMessage = message.ReplyToMessage;
             var chatId = message.Chat.Id;
 
 
@@ -56,14 +56,14 @@ namespace BotLogic
                         await PrintBaseCurrency(botClient, message);
                         break;
                     case ("Chaos to Div"):
-                        Message convertMessage1 = await botClient.SendTextMessageAsync(
+                            await botClient.SendTextMessageAsync(
                             chatId: chatId,
                             text: "Chaos to Div:",
                             replyMarkup: ForceReplyMarkup,
                             cancellationToken: cancellationToken);
                         break;
                     case ("Div to Chaos"):
-                        Message convertMessage2 = await botClient.SendTextMessageAsync(
+                            await botClient.SendTextMessageAsync(
                             chatId: chatId,
                             text: "Div to Chaos:",
                             replyMarkup: ForceReplyMarkup,
@@ -72,11 +72,7 @@ namespace BotLogic
                     default:
                         if (replyMessage == null)
                         {
-                            await botClient.SendTextMessageAsync(
-                            chatId: chatId,
-                            text: "Пустое сообщение",
-                            replyMarkup: keyboard1,
-                            cancellationToken: cancellationToken);
+                            await PrintVoidMessage(botClient, message);
                         }
                         else
                         {
@@ -89,11 +85,7 @@ namespace BotLogic
                                     await DivToChaos(botClient, message);
                                     break;
                                 default:
-                                    await botClient.SendTextMessageAsync(
-                                    chatId: chatId,
-                                    text: "Пустое сообщение",
-                                    replyMarkup: keyboard1,
-                                    cancellationToken: cancellationToken);
+                                    await PrintVoidMessage(botClient, message);
                                     break;
                             }
                         }
@@ -106,7 +98,8 @@ namespace BotLogic
             }
         }
 
-        public static Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        public static Task HandlePollingErrorAsync
+            (ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
             {
@@ -131,7 +124,6 @@ namespace BotLogic
             {
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Ошибка валидации. Введены некорректные значения.\n" +
                     " Просьба указывать запятую вместо точки(или наоборот) и не вводить букв.", replyMarkup: keyboard1);
-                //"Что-то не то ввели. (Попробуйте \"точку\" вместо \"запятой\" или наоборот)"
 
             }
         }
@@ -168,6 +160,14 @@ namespace BotLogic
             StringBuilder sb = new StringBuilder();
             sb = GetPoeData.GetStringBuilder(GetPoeData.divinationCards);
             await botClient.SendTextMessageAsync(chatId: message.Chat.Id, text: sb.ToString());
+        }
+
+        private static async Task PrintVoidMessage(ITelegramBotClient botClient, Message message)
+        {
+            await botClient.SendTextMessageAsync(
+                                    chatId: message.Chat.Id,
+                                    text: "Пустое сообщение",
+                                    replyMarkup: keyboard1);
         }
     }
 }

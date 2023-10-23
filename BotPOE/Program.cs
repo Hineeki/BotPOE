@@ -28,7 +28,6 @@ namespace BotPOE
             Console.WriteLine("Запущен бот " + BasicLogic.bot.GetMeAsync().Result.FirstName);
 
             var cts = new CancellationTokenSource();
-            var cancellationToken = cts.Token;
 
             BasicLogic.bot.StartReceiving(
             updateHandler: BasicLogic.HandleUpdateAsync,

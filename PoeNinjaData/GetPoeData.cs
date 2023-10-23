@@ -16,7 +16,7 @@ namespace RequestPoeNinjaData
         {
             GetRequest leagueRequest = new GetRequest("https://poe.ninja/api/data/getindexstate?");
             leagueRequest.Run();
-            var leagueResponse = leagueRequest.Response;
+            string leagueResponse = leagueRequest.Response;
             JObject jsonLeagues = JObject.Parse(leagueResponse);
             string oldLeagueName = leagueName;
             leagueName = GetLeagueName(jsonLeagues);
@@ -56,7 +56,7 @@ namespace RequestPoeNinjaData
                 Console.WriteLine("Данные с WEB по валюте не получены.");
             }
             return newList;
-        }// нужно подумать как лучше хранить валюту, чтобы и в сообщениях отправлять 
+        }
         public static List<Fragment> GetFragmentsData(string leagueName)
         {
             GetRequest fragmentsRequest = new GetRequest($"https://poe.ninja/api/data/currencyoverview?league={leagueName}&type=Fragment");
@@ -72,7 +72,7 @@ namespace RequestPoeNinjaData
                 Console.WriteLine("Данные с WEB по валюте не получены.");
             }
             return newList;
-        }//и вытягивать поштучно
+        }
         public static List<DivinationCard> GetDivCardsData(string leagueName)
         {
             GetRequest divCardsRequest = new GetRequest(
