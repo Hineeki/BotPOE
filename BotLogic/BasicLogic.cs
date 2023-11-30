@@ -115,7 +115,7 @@ namespace BotLogic
         private static async Task ChaosToDiv(ITelegramBotClient botClient, Message message)
         {
             var newMessage = message.Text.Replace('.', ',');
-            if (double.TryParse(newMessage, out var convValue))
+            if (double.TryParse(newMessage, CultureInfo.InvariantCulture, out var convValue))
             {
                 var value = convValue / GetPoeData.div.ChaosEquivalent;
                 await botClient.SendTextMessageAsync(message.Chat.Id, value.ToString("#.##") + " div", replyMarkup: keyboard1);
