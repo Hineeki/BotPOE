@@ -21,8 +21,8 @@ namespace BotPOE
 
             GetPoeData.currencies = GetPoeData.GetCurrencyData(GetPoeData.GetLeagueData());//может в мейне создавать статические листы с данными
             GetPoeData.div = GetPoeData.currencies.Find(x => x.Name == "Divine Orb");       //а не в библиотеках???
-            GetPoeData.fragments = GetPoeData.GetFragmentsData(GetPoeData.leagueName);
-            GetPoeData.divinationCards = GetPoeData.GetDivCardsData(GetPoeData.leagueName);
+            //GetPoeData.fragments = GetPoeData.GetFragmentsData(GetPoeData.leagueName);
+            //GetPoeData.divinationCards = GetPoeData.GetDivCardsData(GetPoeData.leagueName);
 
 
             Console.WriteLine("Запущен бот " + BasicLogic.bot.GetMeAsync().Result.FirstName);

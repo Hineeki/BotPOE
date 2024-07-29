@@ -1,19 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
-using RequestPoeNinjaData;
+﻿using RequestPoeNinjaData;
 using System.Globalization;
 using System.Text;
-using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotLogic
 {
     public class BasicLogic
     {
-        public static ITelegramBotClient bot = new TelegramBotClient("6054284848:AAEL6eVxR94H-HMZ9DqMTCddv7Fxa_u78hk");
+        public static ITelegramBotClient bot = new TelegramBotClient("6752652111:AAFPMHS_w_aW7PUE3WOGyBQKx5ODA8JZ204");
 
         static List<KeyboardButton> buttons1 = new List<KeyboardButton>() { new KeyboardButton("Курс валют"),
                                                new KeyboardButton("Chaos to Div"), new KeyboardButton("Div to Chaos") };
