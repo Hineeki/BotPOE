@@ -39,7 +39,7 @@ namespace RequestPoeNinjaData
             }
             catch (NotSupportedException nse)
             {
-                Console.WriteLine("Удостоверьтесь, что URL использует поддерживаемый протокол (например, http или https).");
+                Console.WriteLine("Удостоверьтесь, что URL использует поддерживаемый протокол (http или https).");
             }
             catch (ObjectDisposedException ode)
             {
